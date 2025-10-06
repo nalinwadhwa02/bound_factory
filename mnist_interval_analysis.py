@@ -16,6 +16,11 @@ from torchsummary import summary
 
 from bound_propagation import BoundModelFactory, HyperRectangle
 
+from models.mnist_simple_model import (
+    MNISTMODEL,
+    get_trained_mnist_model_with_train_and_test,
+)
+
 from bound_factory import (
     BoundedModuleRegistry,
     get_input_bounds,
@@ -30,59 +35,6 @@ np.random.seed(42)
 torch.manual_seed(42)
 
 MODEL_PATH = f"data/saved_models/mnist_model.pt"
-
-
-def save_model(model, path=MODEL_PATH):
-    torch.save(model.state_dict(), path)
-    print(f"Model saved to {path}")
-
-
-def load_model(model, path=MODEL_PATH, device="cpu"):
-    model.load_state_dict(torch.load(path, map_location=device))
-    model.to(device)
-    print(f"Model loaded from {path}")
-    return model
-
-
-def train_model(model, num_epochs, train_loader):
-    criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.001, momentum=0.9)
-    device = next(model.parameters()).device
-
-    for epoch in range(num_epochs):
-        model.train()
-        running_loss = 0.0
-        for i, data in enumerate(train_loader, 0):
-            images, labels = data
-            images, labels = images.to(device), labels.to(device)
-
-            optimizer.zero_grad()
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
-
-            running_loss += loss.item()
-
-        print(
-            f"Epoch {epoch + 1}/{num_epochs}, Loss: {running_loss / len(train_loader):.3f}"
-        )
-
-
-def test_model(model, test_loader):
-    model.eval()
-    device = next(model.parameters()).device
-    with torch.no_grad():
-        correct = 0
-        total = 0
-        for data in test_loader:
-            images, labels = data
-            images, labels = images.to(device), labels.to(device)
-            outputs = model(images)
-            _, predicted = torch.max(outputs.data, 1)
-            total += labels.size(0)
-            correct += (predicted == labels).sum().item()
-        print(f"Accuracy on images: {100 * correct / total}")
 
 
 def test_model_robustness_boundprop(model, eps, test_loader, device):
@@ -218,56 +170,10 @@ def test_model_robustness(bounded_model, eps, test_loader):
 
 def main():
     device = torch.device("cuda" if use_cuda else "cpu")
-    batch_size = 64
 
-    transform = transforms.Compose(
-        [
-            transforms.ToTensor(),
-            transforms.Normalize((0.1307,), (0.3081,)),  # mean and std for MNIST
-            transforms.Lambda(lambda x: x.view(-1)),  # flatten
-        ]
+    model, train_loader, test_loader = get_trained_mnist_model_with_train_and_test(
+        device=device
     )
-
-    train_dataset = datasets.MNIST(
-        "mnist_data/",
-        train=True,
-        download=True,
-        transform=transform,
-    )
-    test_dataset = datasets.MNIST(
-        "mnist_data/",
-        train=False,
-        download=True,
-        transform=transform,
-    )
-
-    train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=batch_size, shuffle=True
-    )
-    test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=batch_size, shuffle=False
-    )
-
-    model = nn.Sequential(
-        nn.Linear(28 * 28, 200),
-        nn.ReLU(),
-        nn.Linear(200, 10),
-        # nn.Softmax(dim=-1),
-    )
-
-    model = model.to(device)
-    summary(model, (784,))
-    model.train()
-
-    if os.path.exists(MODEL_PATH):
-        model = load_model(model, path=MODEL_PATH, device=device)
-    else:
-        # Train model if no saved weights
-        train_model(model, num_epochs=10, train_loader=train_loader)
-        save_model(model, path=MODEL_PATH)
-
-    test_model(model, test_loader)
-
     ## you can use https://github.com/Zinoex/bound_propagation
     bounded_model = get_bounded_module(model)
 
