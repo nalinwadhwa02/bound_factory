@@ -1,0 +1,161 @@
+$ python mnist_interval_analysis.py
+----------------------------------------------------------------
+        Layer (type)               Output Shape         Param #
+================================================================
+            Linear-1                  [-1, 200]         157,000
+              ReLU-2                  [-1, 200]               0
+            Linear-3                   [-1, 10]           2,010
+================================================================
+Total params: 159,010
+Trainable params: 159,010
+Non-trainable params: 0
+----------------------------------------------------------------
+Input size (MB): 0.00
+Forward/backward pass size (MB): 0.00
+Params size (MB): 0.61
+Estimated Total Size (MB): 0.61
+----------------------------------------------------------------
+Model loaded from data/saved_models/mnist_model.pt
+Accuracy on images: 92.65
+# Testing robustness accuracy from my bound_factory!!!
+Eps: 0.01
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 8686 (86.86%)
+Bounds type: poly_interval_bounds	 robustness: 8686 (86.86%)
+Bounds type: poly_backsubst_bounds	 robustness: 8776 (87.76%)
+--------------------------------------------------
+Eps: 0.02
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 8542 (85.42%)
+Bounds type: poly_interval_bounds	 robustness: 8542 (85.42%)
+Bounds type: poly_backsubst_bounds	 robustness: 8749 (87.49%)
+--------------------------------------------------
+Eps: 0.03
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 8401 (84.01%)
+Bounds type: poly_interval_bounds	 robustness: 8401 (84.01%)
+Bounds type: poly_backsubst_bounds	 robustness: 8714 (87.14%)
+--------------------------------------------------
+Eps: 0.04
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 8257 (82.57%)
+Bounds type: poly_interval_bounds	 robustness: 8257 (82.57%)
+Bounds type: poly_backsubst_bounds	 robustness: 8682 (86.82%)
+--------------------------------------------------
+Eps: 0.05
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 8077 (80.77%)
+Bounds type: poly_interval_bounds	 robustness: 8077 (80.77%)
+Bounds type: poly_backsubst_bounds	 robustness: 8652 (86.52%)
+--------------------------------------------------
+Eps: 0.060000000000000005
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 7857 (78.57%)
+Bounds type: poly_interval_bounds	 robustness: 7857 (78.57%)
+Bounds type: poly_backsubst_bounds	 robustness: 8614 (86.14%)
+--------------------------------------------------
+Eps: 0.06999999999999999
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 7631 (76.31%)
+Bounds type: poly_interval_bounds	 robustness: 7631 (76.31%)
+Bounds type: poly_backsubst_bounds	 robustness: 8576 (85.76%)
+--------------------------------------------------
+Eps: 0.08
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 7408 (74.08%)
+Bounds type: poly_interval_bounds	 robustness: 7408 (74.08%)
+Bounds type: poly_backsubst_bounds	 robustness: 8533 (85.33%)
+--------------------------------------------------
+Eps: 0.09
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 7187 (71.87%)
+Bounds type: poly_interval_bounds	 robustness: 7187 (71.87%)
+Bounds type: poly_backsubst_bounds	 robustness: 8490 (84.9%)
+--------------------------------------------------
+Eps: 0.09999999999999999
+Total: 10000
+Accuracy on images: 9265 (92.65%)
+Bounds type: base_interval_bounds	 robustness: 6911 (69.11%)
+Bounds type: poly_interval_bounds	 robustness: 6911 (69.11%)
+Bounds type: poly_backsubst_bounds	 robustness: 8451 (84.51%)
+--------------------------------------------------
+# Testing robustness accuracy from bound_propogation library!!!
+Eps: 0.01
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 7751 (77.51%)
+Robustness (crown): 9104 (91.04%)
+Robustness (crown_ibp): 9104 (91.04%)
+--------------------------------------------------
+Eps: 0.02
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 4381 (43.81%)
+Robustness (crown): 8854 (88.54%)
+Robustness (crown_ibp): 8854 (88.54%)
+--------------------------------------------------
+Eps: 0.03
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 1473 (14.73%)
+Robustness (crown): 8474 (84.74%)
+Robustness (crown_ibp): 8474 (84.74%)
+--------------------------------------------------
+Eps: 0.04
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 405 (4.05%)
+Robustness (crown): 7944 (79.44%)
+Robustness (crown_ibp): 7944 (79.44%)
+--------------------------------------------------
+Eps: 0.05
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 98 (0.98%)
+Robustness (crown): 7139 (71.39%)
+Robustness (crown_ibp): 7139 (71.39%)
+--------------------------------------------------
+Eps: 0.060000000000000005
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 11 (0.11%)
+Robustness (crown): 5946 (59.46%)
+Robustness (crown_ibp): 5946 (59.46%)
+--------------------------------------------------
+Eps: 0.06999999999999999
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 1 (0.01%)
+Robustness (crown): 4493 (44.93%)
+Robustness (crown_ibp): 4493 (44.93%)
+--------------------------------------------------
+Eps: 0.08
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 0 (0.00%)
+Robustness (crown): 3152 (31.52%)
+Robustness (crown_ibp): 3152 (31.52%)
+--------------------------------------------------
+Eps: 0.09
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 0 (0.00%)
+Robustness (crown): 2098 (20.98%)
+Robustness (crown_ibp): 2098 (20.98%)
+--------------------------------------------------
+Eps: 0.09999999999999999
+Total samples: 10000
+Nominal Accuracy: 92.65%
+Robustness (ibp): 0 (0.00%)
+Robustness (crown): 1370 (13.70%)
+Robustness (crown_ibp): 1370 (13.70%)
+--------------------------------------------------
