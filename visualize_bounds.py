@@ -2,7 +2,9 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 
-from bound_factory import get_bounded_module
+from bound_factory import get_bounded_module, get_input_bounds
+from models.model_utils import get_best_device
+from models.mnist_simple_model import get_trained_mnist_model_with_train_and_test
 
 
 def print_layer_bounds(layer_bounds_list, input_bounds=None, detailed=False):
@@ -349,7 +351,7 @@ def get_bounds_summary(layer_bounds_list, input_bounds=None):
 
 
 if __name__ == "__main__":
-    device = torch.device("cuda")
+    device = get_best_device()
 
     model, train_loader, test_loader = get_trained_mnist_model_with_train_and_test(
         device=device
@@ -357,23 +359,27 @@ if __name__ == "__main__":
     ## you can use https://github.com/Zinoex/bound_propagation
     bounded_model = get_bounded_module(model)
 
-    ## usage
-    # Get bounds from your model
-    layer_bounds = model.deeppoly_forward(input_bounds)
+    bounded_model.eval()
+    with torch.no_grad():
+        images, labels = next(iter(test_loader))
+        images, labels = images.to(device), labels.to(device)
 
-    # Print text summary
-    print_layer_bounds(layer_bounds, input_bounds, detailed=True)
+        input_bounds = get_input_bounds(images, 0.01)
 
-    # Visualize with graphs
-    fig, axes = visualize_bound_widths(layer_bounds, input_bounds)
-    plt.show()
+        layer_bounds = bounded_model.deeppoly_forward(input_bounds)
 
-    # Compare methods
-    fig, axes = compare_bounds_methods(
-        {"IBP": ibp_bounds, "DeepPoly": deeppoly_bounds}, input_bounds
-    )
-    plt.show()
+        # Print text summary
+        print_layer_bounds(layer_bounds, input_bounds, detailed=True)
 
-    # Get summary dict
-    summary = get_bounds_summary(layer_bounds, input_bounds)
-    print(summary["layer_1"]["mean_width"])
+        # Visualize with graphs
+        fig, axes = visualize_bound_widths(layer_bounds, input_bounds)
+        plt.show()
+
+        # # Compare methods
+        # fig, axes = compare_bounds_methods(
+        #     {"IBP": ibp_bounds, "DeepPoly": deeppoly_bounds}, input_bounds
+        # )
+        # plt.show()
+
+        # Get summary dict
+        summary = get_bounds_summary(layer_bounds, input_bounds)

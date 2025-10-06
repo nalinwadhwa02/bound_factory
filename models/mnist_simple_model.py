@@ -17,6 +17,8 @@ class MNISTMODEL(nn.Sequential):
             nn.Linear(28 * 28, 200),
             nn.ReLU(),
             nn.Linear(200, 10),
+            # nn.ReLU(),
+            # nn.Linear(in_features=100, out_features=10),
             # nn.Softmax(dim=-1),
         )
 
@@ -57,7 +59,7 @@ def get_trained_mnist_model_with_train_and_test(
 
     model = model.to(device)
 
-    summary(model, (784,))
+    # summary(model, (784,), device=str(device))
 
     model.train()
 

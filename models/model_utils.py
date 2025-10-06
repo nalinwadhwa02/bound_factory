@@ -2,6 +2,17 @@ import os
 import torch
 import torch.optim as optim
 import torch.nn.functional as F
+import torch.nn as nn
+
+
+def get_best_device():
+    if torch.backends.mps.is_available():
+        device = "mps"
+    elif torch.cuda.is_available():
+        device = "cuda"
+    else:
+        device = "cpu"
+    return device
 
 
 def save_model(model, path):

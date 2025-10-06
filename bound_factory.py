@@ -543,13 +543,16 @@ def get_bounds_via_method(model: BoundedModule, method, input_bounds) -> Bounds:
 def get_bounded_module(module: nn.Module) -> BoundedModule:
     module_type = type(module)
     if module_type not in BoundedModuleRegistry:
+        for orig_class, bounded_class in BoundedModuleRegistry.items():
+            if isinstance(module, orig_class):
+                return bounded_class(module)
         raise Exception(f"Module {module_type} not found in BoundedModuleRegistry")
     return BoundedModuleRegistry[module_type](module)
 
 
 def get_input_bounds(x, eps):
-    lower = torch.clamp(x - eps, min=0, max=1)
-    upper = torch.clamp(x + eps, min=0, max=1)
+    lower = x - eps
+    upper = x + eps
     return Bounds(lower, upper)
 
 
