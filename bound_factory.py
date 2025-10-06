@@ -553,20 +553,53 @@ def get_input_bounds(x, eps):
     return Bounds(lower, upper)
 
 
-def evaluate_bound_quality(bounds: Bounds, verbose=False):
-    """Comprehensive bound quality metrics"""
-    width = bounds.upper - bounds.lower
+def evaluate_bound_quality(bounds, verbose=False):
+    """
+    Computes the mean width of bounds for single or multiple bounds entries.
 
-    metrics = {
-        "mean_width": width.mean().item(),
-        "max_width": width.max().item(),
-        "min_width": width.min().item(),
-        "std_width": width.std().item(),
-    }
+    Args:
+        bounds: Either a single Bounds tuple (lower, upper) of shape (B, C)
+                or a list of such Bounds. Batch sizes B can differ between entries.
+        verbose: If True, prints mean width for each bounds entry.
 
+    Returns:
+        overall_mean_width: Mean bound width across all entries.
+    """
+
+    # Ensure bounds_list is a list
+    if isinstance(bounds, tuple):
+        bounds_list = [bounds]
+    elif isinstance(bounds, list):
+        bounds_list = bounds
+    else:
+        raise ValueError(
+            "bounds must be a tuple (lower, upper) or a list of such tuples."
+        )
+
+    total_width = 0.0
+    total_count = 0
+
+    for idx, bound in enumerate(bounds_list):
+        lower = bound.lower
+        upper = bound.upper
+        if lower.shape != upper.shape:
+            raise ValueError(
+                f"Lower and upper bounds must have the same shape, got {lower.shape} and {upper.shape}"
+            )
+
+        batch_mean_width = (upper - lower).mean().item()
+        total_width += batch_mean_width
+        total_count += 1
+
+        if verbose:
+            print(
+                f"Bounds entry {idx} (batch size {lower.shape[0]}): mean width = {batch_mean_width:.6f}"
+            )
+
+    overall_mean_width = total_width / total_count
     if verbose:
-        print(f"Bound Quality Metrics:")
-        for k, v in metrics.items():
-            print(f"  {k}: {v:.6f}")
+        print(
+            f"Overall mean width across {total_count} entries: {overall_mean_width:.6f}"
+        )
 
-    return metrics
+    return overall_mean_width

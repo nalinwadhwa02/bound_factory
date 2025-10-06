@@ -1,5 +1,6 @@
 import os
 import torch
+from torch._dynamo.config import verbose
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
@@ -106,6 +107,7 @@ def test_model_robustness_boundprop(model, eps, test_loader, device):
     total = 0
     correct = 0
     robustness_counts = defaultdict(int)
+    collected_bounds = defaultdict(list)
 
     for data in test_loader:
         images, labels = data
@@ -132,6 +134,7 @@ def test_model_robustness_boundprop(model, eps, test_loader, device):
             ("crown", crown_bounds),
             ("crown_ibp", crown_ibp_bounds),
         ]:
+            collected_bounds[bound_name].append(bound)
             lower = bound.lower
             upper = bound.upper
 
@@ -146,8 +149,13 @@ def test_model_robustness_boundprop(model, eps, test_loader, device):
     print(f"Eps: {eps}")
     print(f"Total samples: {total}")
     print(f"Nominal Accuracy: {100 * correct / total:.2f}%")
-    for name, count in robustness_counts.items():
-        print(f"Robustness ({name}): {count} ({100 * count / total:.2f}%)")
+
+    for bounds_label, rb in robustness_counts.items():
+        mean_bound_width = evaluate_bound_quality(collected_bounds[bounds_label])
+        print(
+            f"Bounds type: {bounds_label}\t robustness: {rb} ({100 * rb / total}%)\t mean_bound_width: {mean_bound_width}"
+        )
+    return collected_bounds
 
 
 def test_model_robustness(bounded_model, eps, test_loader):
@@ -201,9 +209,11 @@ def test_model_robustness(bounded_model, eps, test_loader):
         print(f"Total: {total}")
         print(f"Accuracy on images: {correct} ({100 * correct / total}%)")
         for bounds_label, rb in robustness_count.items():
+            mean_bound_width = evaluate_bound_quality(collected_bounds[bounds_label])
             print(
-                f"Bounds type: {bounds_label}\t robustness: {rb} ({100 * rb / total}%)"
+                f"Bounds type: {bounds_label}\t robustness: {rb} ({100 * rb / total}%)\t mean_bound_width: {mean_bound_width}"
             )
+        return collected_bounds
 
 
 def main():
@@ -263,12 +273,12 @@ def main():
 
     print(f"# Testing robustness accuracy from my bound_factory!!!")
     for eps in np.arange(0.01, 0.11, 0.01):
-        test_model_robustness(bounded_model, eps, test_loader)
+        bf_bounds = test_model_robustness(bounded_model, eps, test_loader)
         print("-" * 50)
 
     print(f"# Testing robustness accuracy from bound_propogation library!!!")
     for eps in np.arange(0.01, 0.11, 0.01):
-        test_model_robustness_boundprop(model, eps, test_loader, device)
+        bf_bounds = test_model_robustness_boundprop(model, eps, test_loader, device)
         print("-" * 50)
 
 

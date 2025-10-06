@@ -21,141 +21,141 @@ Accuracy on images: 92.65
 Eps: 0.01
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 8686 (86.86%)
-Bounds type: poly_interval_bounds	 robustness: 8686 (86.86%)
-Bounds type: poly_backsubst_bounds	 robustness: 8776 (87.76%)
+Bounds type: base_interval_bounds	 robustness: 8686 (86.86%)	 mean_bound_width: 0.11619747510761212
+Bounds type: poly_interval_bounds	 robustness: 8686 (86.86%)	 mean_bound_width: 0.11619747510761212
+Bounds type: poly_backsubst_bounds	 robustness: 8776 (87.76%)	 mean_bound_width: 0.02766803974748417
 --------------------------------------------------
 Eps: 0.02
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 8542 (85.42%)
-Bounds type: poly_interval_bounds	 robustness: 8542 (85.42%)
-Bounds type: poly_backsubst_bounds	 robustness: 8749 (87.49%)
+Bounds type: base_interval_bounds	 robustness: 8542 (85.42%)	 mean_bound_width: 0.23239295640189178
+Bounds type: poly_interval_bounds	 robustness: 8542 (85.42%)	 mean_bound_width: 0.23239295640189178
+Bounds type: poly_backsubst_bounds	 robustness: 8749 (87.49%)	 mean_bound_width: 0.055798238107732906
 --------------------------------------------------
 Eps: 0.03
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 8401 (84.01%)
-Bounds type: poly_interval_bounds	 robustness: 8401 (84.01%)
-Bounds type: poly_backsubst_bounds	 robustness: 8714 (87.14%)
+Bounds type: base_interval_bounds	 robustness: 8401 (84.01%)	 mean_bound_width: 0.3488492403820062
+Bounds type: poly_interval_bounds	 robustness: 8401 (84.01%)	 mean_bound_width: 0.3488492403820062
+Bounds type: poly_backsubst_bounds	 robustness: 8714 (87.14%)	 mean_bound_width: 0.08447864347962057
 --------------------------------------------------
 Eps: 0.04
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 8257 (82.57%)
-Bounds type: poly_interval_bounds	 robustness: 8257 (82.57%)
-Bounds type: poly_backsubst_bounds	 robustness: 8682 (86.82%)
+Bounds type: base_interval_bounds	 robustness: 8257 (82.57%)	 mean_bound_width: 0.4657982225251046
+Bounds type: poly_interval_bounds	 robustness: 8257 (82.57%)	 mean_bound_width: 0.4657982225251046
+Bounds type: poly_backsubst_bounds	 robustness: 8682 (86.82%)	 mean_bound_width: 0.1137252785028166
 --------------------------------------------------
 Eps: 0.05
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 8077 (80.77%)
-Bounds type: poly_interval_bounds	 robustness: 8077 (80.77%)
-Bounds type: poly_backsubst_bounds	 robustness: 8652 (86.52%)
+Bounds type: base_interval_bounds	 robustness: 8077 (80.77%)	 mean_bound_width: 0.5828299769170725
+Bounds type: poly_interval_bounds	 robustness: 8077 (80.77%)	 mean_bound_width: 0.5828299769170725
+Bounds type: poly_backsubst_bounds	 robustness: 8652 (86.52%)	 mean_bound_width: 0.14346834760942276
 --------------------------------------------------
 Eps: 0.060000000000000005
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 7857 (78.57%)
-Bounds type: poly_interval_bounds	 robustness: 7857 (78.57%)
-Bounds type: poly_backsubst_bounds	 robustness: 8614 (86.14%)
+Bounds type: base_interval_bounds	 robustness: 7857 (78.57%)	 mean_bound_width: 0.6999494224596935
+Bounds type: poly_interval_bounds	 robustness: 7857 (78.57%)	 mean_bound_width: 0.6999494224596935
+Bounds type: poly_backsubst_bounds	 robustness: 8614 (86.14%)	 mean_bound_width: 0.17371707623171959
 --------------------------------------------------
 Eps: 0.06999999999999999
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 7631 (76.31%)
-Bounds type: poly_interval_bounds	 robustness: 7631 (76.31%)
-Bounds type: poly_backsubst_bounds	 robustness: 8576 (85.76%)
+Bounds type: base_interval_bounds	 robustness: 7631 (76.31%)	 mean_bound_width: 0.8169465805314908
+Bounds type: poly_interval_bounds	 robustness: 7631 (76.31%)	 mean_bound_width: 0.8169465805314908
+Bounds type: poly_backsubst_bounds	 robustness: 8576 (85.76%)	 mean_bound_width: 0.20441691529978612
 --------------------------------------------------
 Eps: 0.08
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 7408 (74.08%)
-Bounds type: poly_interval_bounds	 robustness: 7408 (74.08%)
-Bounds type: poly_backsubst_bounds	 robustness: 8533 (85.33%)
+Bounds type: base_interval_bounds	 robustness: 7408 (74.08%)	 mean_bound_width: 0.9340566446067421
+Bounds type: poly_interval_bounds	 robustness: 7408 (74.08%)	 mean_bound_width: 0.9340566446067421
+Bounds type: poly_backsubst_bounds	 robustness: 8533 (85.33%)	 mean_bound_width: 0.23562547213332669
 --------------------------------------------------
 Eps: 0.09
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 7187 (71.87%)
-Bounds type: poly_interval_bounds	 robustness: 7187 (71.87%)
-Bounds type: poly_backsubst_bounds	 robustness: 8490 (84.9%)
+Bounds type: base_interval_bounds	 robustness: 7187 (71.87%)	 mean_bound_width: 1.051467278960404
+Bounds type: poly_interval_bounds	 robustness: 7187 (71.87%)	 mean_bound_width: 1.051467278960404
+Bounds type: poly_backsubst_bounds	 robustness: 8490 (84.9%)	 mean_bound_width: 0.26737847411708465
 --------------------------------------------------
 Eps: 0.09999999999999999
 Total: 10000
 Accuracy on images: 9265 (92.65%)
-Bounds type: base_interval_bounds	 robustness: 6911 (69.11%)
-Bounds type: poly_interval_bounds	 robustness: 6911 (69.11%)
-Bounds type: poly_backsubst_bounds	 robustness: 8451 (84.51%)
+Bounds type: base_interval_bounds	 robustness: 6911 (69.11%)	 mean_bound_width: 1.1690568680975848
+Bounds type: poly_interval_bounds	 robustness: 6911 (69.11%)	 mean_bound_width: 1.1690568680975848
+Bounds type: poly_backsubst_bounds	 robustness: 8451 (84.51%)	 mean_bound_width: 0.2996823554206046
 --------------------------------------------------
 # Testing robustness accuracy from bound_propogation library!!!
 Eps: 0.01
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 7751 (77.51%)
-Robustness (crown): 9104 (91.04%)
-Robustness (crown_ibp): 9104 (91.04%)
+Bounds type: ibp	 robustness: 7751 (77.51%)	 mean_bound_width: 3.575999474069875
+Bounds type: crown	 robustness: 9104 (91.04%)	 mean_bound_width: 0.6522701906550462
+Bounds type: crown_ibp	 robustness: 9104 (91.04%)	 mean_bound_width: 0.6522702206471923
 --------------------------------------------------
 Eps: 0.02
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 4381 (43.81%)
-Robustness (crown): 8854 (88.54%)
-Robustness (crown_ibp): 8854 (88.54%)
+Bounds type: ibp	 robustness: 4381 (43.81%)	 mean_bound_width: 7.13909659112335
+Bounds type: crown	 robustness: 8854 (88.54%)	 mean_bound_width: 1.415321687983859
+Bounds type: crown_ibp	 robustness: 8854 (88.54%)	 mean_bound_width: 1.415321759357574
 --------------------------------------------------
 Eps: 0.03
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 1473 (14.73%)
-Robustness (crown): 8474 (84.74%)
-Robustness (crown_ibp): 8474 (84.74%)
+Bounds type: ibp	 robustness: 1473 (14.73%)	 mean_bound_width: 10.677846963238565
+Bounds type: crown	 robustness: 8474 (84.74%)	 mean_bound_width: 2.2820929903892955
+Bounds type: crown_ibp	 robustness: 8474 (84.74%)	 mean_bound_width: 2.2820930845418554
 --------------------------------------------------
 Eps: 0.04
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 405 (4.05%)
-Robustness (crown): 7944 (79.44%)
-Robustness (crown_ibp): 7944 (79.44%)
+Bounds type: ibp	 robustness: 405 (4.05%)	 mean_bound_width: 14.181679713498255
+Bounds type: crown	 robustness: 7944 (79.44%)	 mean_bound_width: 3.2451699660841826
+Bounds type: crown_ibp	 robustness: 7944 (79.44%)	 mean_bound_width: 3.2451701103502018
 --------------------------------------------------
 Eps: 0.05
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 98 (0.98%)
-Robustness (crown): 7139 (71.39%)
-Robustness (crown_ibp): 7139 (71.39%)
+Bounds type: ibp	 robustness: 98 (0.98%)	 mean_bound_width: 17.64176358994405
+Bounds type: crown	 robustness: 7139 (71.39%)	 mean_bound_width: 4.295654688671136
+Bounds type: crown_ibp	 robustness: 7139 (71.39%)	 mean_bound_width: 4.29565486027177
 --------------------------------------------------
 Eps: 0.060000000000000005
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 11 (0.11%)
-Robustness (crown): 5946 (59.46%)
-Robustness (crown_ibp): 5946 (59.46%)
+Bounds type: ibp	 robustness: 11 (0.11%)	 mean_bound_width: 21.04991247092083
+Bounds type: crown	 robustness: 5946 (59.46%)	 mean_bound_width: 5.424657001616849
+Bounds type: crown_ibp	 robustness: 5946 (59.46%)	 mean_bound_width: 5.424657247628376
 --------------------------------------------------
 Eps: 0.06999999999999999
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 1 (0.01%)
-Robustness (crown): 4493 (44.93%)
-Robustness (crown_ibp): 4493 (44.93%)
+Bounds type: ibp	 robustness: 1 (0.01%)	 mean_bound_width: 24.400322580033805
+Bounds type: crown	 robustness: 4493 (44.93%)	 mean_bound_width: 6.623833279700795
+Bounds type: crown_ibp	 robustness: 4493 (44.93%)	 mean_bound_width: 6.623833601641807
 --------------------------------------------------
 Eps: 0.08
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 0 (0.00%)
-Robustness (crown): 3152 (31.52%)
-Robustness (crown_ibp): 3152 (31.52%)
+Bounds type: ibp	 robustness: 0 (0.0%)	 mean_bound_width: 27.689024907008857
+Bounds type: crown	 robustness: 3152 (31.52%)	 mean_bound_width: 7.8853867160286875
+Bounds type: crown_ibp	 robustness: 3152 (31.52%)	 mean_bound_width: 7.885387071378672
 --------------------------------------------------
 Eps: 0.09
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 0 (0.00%)
-Robustness (crown): 2098 (20.98%)
-Robustness (crown_ibp): 2098 (20.98%)
+Bounds type: ibp	 robustness: 0 (0.0%)	 mean_bound_width: 30.913315171648744
+Bounds type: crown	 robustness: 2098 (20.98%)	 mean_bound_width: 9.202185242039382
+Bounds type: crown_ibp	 robustness: 2098 (20.98%)	 mean_bound_width: 9.202185618649622
 --------------------------------------------------
 Eps: 0.09999999999999999
 Total samples: 10000
 Nominal Accuracy: 92.65%
-Robustness (ibp): 0 (0.00%)
-Robustness (crown): 1370 (13.70%)
-Robustness (crown_ibp): 1370 (13.70%)
+Bounds type: ibp	 robustness: 0 (0.0%)	 mean_bound_width: 34.0719059743699
+Bounds type: crown	 robustness: 1370 (13.7%)	 mean_bound_width: 10.568209277596443
+Bounds type: crown_ibp	 robustness: 1370 (13.7%)	 mean_bound_width: 10.568209775693857
 --------------------------------------------------
