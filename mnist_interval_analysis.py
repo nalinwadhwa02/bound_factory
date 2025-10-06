@@ -51,7 +51,7 @@ def test_model_robustness(bounded_model, eps, test_loader):
             outputs = bounded_model.forward(images)
 
             # perturbed_images
-            perterbed_images_bounds = get_input_bounds(images, eps)
+            perterbed_images_bounds = get_input_bounds(images, eps / 0.3081)
 
             # regular interval bounds
             output_bounds = bounded_model.interval_forward(perterbed_images_bounds)
@@ -102,10 +102,10 @@ def main():
     ## you can use https://github.com/Zinoex/bound_propagation
     bounded_model = get_bounded_module(model)
 
-    print(f"# Testing robustness accuracy from my bound_factory!!!")
-    for eps in np.arange(0.01, 0.11, 0.01):
-        bf_bounds = test_model_robustness(bounded_model, eps, test_loader)
-        print("-" * 50)
+    # print(f"# Testing robustness accuracy from my bound_factory!!!")
+    # for eps in np.arange(0.01, 0.11, 0.01):
+    #     bf_bounds = test_model_robustness(bounded_model, eps, test_loader)
+    #     print("-" * 50)
 
     print(f"# Testing robustness accuracy from bound_propogation library!!!")
     for eps in np.arange(0.01, 0.11, 0.01):

@@ -364,7 +364,7 @@ if __name__ == "__main__":
         images, labels = next(iter(test_loader))
         images, labels = images.to(device), labels.to(device)
 
-        input_bounds = get_input_bounds(images, 0.01)
+        input_bounds = get_input_bounds(images, 0.01 / 0.3081)
 
         layer_bounds = bounded_model.deeppoly_forward(input_bounds)
 
@@ -382,4 +382,5 @@ if __name__ == "__main__":
         # plt.show()
 
         # Get summary dict
-        summary = get_bounds_summary(layer_bounds, input_bounds)
+        # summary = get_bounds_summary(layer_bounds, input_bounds)
+        # print(summary["layer_1"]["mean_width"])

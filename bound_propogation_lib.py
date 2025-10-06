@@ -34,7 +34,7 @@ def test_model_robustness_boundprop(model, eps, test_loader, device):
         batch_size = images.size(0)
 
         # --- IBP bounds ---
-        input_bounds = HyperRectangle.from_eps(images, eps)
+        input_bounds = HyperRectangle.from_eps(images, eps / 0.3081)
         ibp_bounds = bound_model.ibp(input_bounds)
 
         # --- CROWN bounds ---
