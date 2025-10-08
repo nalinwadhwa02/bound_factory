@@ -1,4 +1,5 @@
 import os
+from turtle import Pen
 import torch
 from torch._dynamo.config import verbose
 import torch.nn as nn
@@ -21,7 +22,7 @@ from models.mnist_simple_model import (
 
 from models.model_utils import get_best_device
 
-from bound_propogation_lib import test_model_robustness_boundprop
+# from bound_propogation_lib import test_model_robustness_boundprop
 
 from bound_factory import (
     BoundedModuleRegistry,
@@ -56,10 +57,17 @@ def test_model_robustness(bounded_model, eps, test_loader):
             # regular interval bounds
             output_bounds = bounded_model.interval_forward(perterbed_images_bounds)
 
-            # poly interval bounds
+            # deeppoly bounds
             layer_poly_bounds = bounded_model.deeppoly_forward(perterbed_images_bounds)
-            tight_bounds = backsubstitute_bounds(
+            tight_deeppoly_bounds = backsubstitute_bounds(
                 layer_poly_bounds, perterbed_images_bounds
+            )
+
+            # polyforward bounds
+            polyforward_interval_bounds, _ = bounded_model.poly_forward(
+                previous_bounds=perterbed_images_bounds,
+                initial_bounds=perterbed_images_bounds,
+                initial_poly_bounds=None,
             )
 
             # image correctness
@@ -67,8 +75,8 @@ def test_model_robustness(bounded_model, eps, test_loader):
 
             for bounds_label, bounds in [
                 ("base_interval_bounds", output_bounds),
-                ("poly_interval_bounds", layer_poly_bounds[-1][0]),
-                ("poly_backsubst_bounds", tight_bounds),
+                ("deeppoly_bounds", tight_deeppoly_bounds),
+                ("polyforward_bounds", polyforward_interval_bounds),
             ]:
                 collected_bounds[bounds_label].append(bounds)
                 # check to see if any lower bound is larger than all the rest upper bounds
@@ -102,14 +110,9 @@ def main():
     ## you can use https://github.com/Zinoex/bound_propagation
     bounded_model = get_bounded_module(model)
 
-    # print(f"# Testing robustness accuracy from my bound_factory!!!")
-    # for eps in np.arange(0.01, 0.11, 0.01):
-    #     bf_bounds = test_model_robustness(bounded_model, eps, test_loader)
-    #     print("-" * 50)
-
-    print(f"# Testing robustness accuracy from bound_propogation library!!!")
+    print(f"# Testing robustness accuracy from my bound_factory!!!")
     for eps in np.arange(0.01, 0.11, 0.01):
-        bf_bounds = test_model_robustness_boundprop(model, eps, test_loader, device)
+        bf_bounds = test_model_robustness(bounded_model, eps, test_loader)
         print("-" * 50)
 
 

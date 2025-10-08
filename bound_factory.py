@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from typing import List
+
 ## you can use https://github.com/Zinoex/bound_propagation
 
 
@@ -17,6 +19,66 @@ class Bounds:
     def __init__(self, lower, upper):
         self.lower = lower
         self.upper = upper
+
+
+def substitute_interval_bounds(poly_bounds, interval_bounds) -> Bounds:
+    lower_coef_pos = torch.clamp(poly_bounds.lower_coef, min=0)
+    lower_coef_neg = torch.clamp(poly_bounds.lower_coef, max=0)
+    final_lower = (
+        torch.bmm(lower_coef_pos, interval_bounds.lower.unsqueeze(-1)).squeeze(-1)
+        + torch.bmm(lower_coef_neg, interval_bounds.upper.unsqueeze(-1)).squeeze(-1)
+        + poly_bounds.lower_bias
+    )
+
+    # Compute final upper bound
+    upper_coef_pos = torch.clamp(poly_bounds.upper_coef, min=0)
+    upper_coef_neg = torch.clamp(poly_bounds.upper_coef, max=0)
+    final_upper = (
+        torch.bmm(upper_coef_pos, interval_bounds.upper.unsqueeze(-1)).squeeze(-1)
+        + torch.bmm(upper_coef_neg, interval_bounds.lower.unsqueeze(-1)).squeeze(-1)
+        + poly_bounds.upper_bias
+    )
+    return Bounds(final_lower, final_upper)
+
+
+def substitute_poly_bounds(curr_poly_bounds, prev_poly_bounds):
+    # For lower and upper bound: substitute previous layer's symbolic forms
+    # For lower bound: positive coefficients use lower bound, negative use upper bound
+    # Compose: new_coef = current_coef @ prev_coef
+    # Compose bias: new_bias = current_coef @ prev_bias + current_bias
+
+    lower_coef_pos = torch.clamp(curr_poly_bounds.lower_coef, min=0)
+    lower_coef_neg = torch.clamp(curr_poly_bounds.lower_coef, max=0)
+
+    new_lower_coef = torch.bmm(lower_coef_pos, prev_poly_bounds.lower_coef) + torch.bmm(
+        lower_coef_neg, prev_poly_bounds.upper_coef
+    )
+
+    new_lower_bias = (
+        torch.bmm(lower_coef_pos, prev_poly_bounds.lower_bias.unsqueeze(-1)).squeeze(-1)
+        + torch.bmm(lower_coef_neg, prev_poly_bounds.upper_bias.unsqueeze(-1)).squeeze(
+            -1
+        )
+        + curr_poly_bounds.lower_bias
+    )
+
+    # For upper bound: positive coefficients use upper bound, negative use lower bound
+    upper_coef_pos = torch.clamp(curr_poly_bounds.upper_coef, min=0)
+    upper_coef_neg = torch.clamp(curr_poly_bounds.upper_coef, max=0)
+
+    new_upper_coef = torch.bmm(upper_coef_pos, prev_poly_bounds.upper_coef) + torch.bmm(
+        upper_coef_neg, prev_poly_bounds.lower_coef
+    )
+
+    new_upper_bias = (
+        torch.bmm(upper_coef_pos, prev_poly_bounds.upper_bias.unsqueeze(-1)).squeeze(-1)
+        + torch.bmm(upper_coef_neg, prev_poly_bounds.lower_bias.unsqueeze(-1)).squeeze(
+            -1
+        )
+        + curr_poly_bounds.upper_bias
+    )
+
+    return PolyBounds(new_lower_coef, new_upper_coef, new_lower_bias, new_upper_bias)
 
 
 class BoundedModule(nn.Module):
@@ -36,6 +98,28 @@ class BoundedModule(nn.Module):
         Each element corresponds to a computational layer in the module.
         """
         raise NotImplementedError
+
+    def poly_forward(
+        self,
+        previous_bounds: Bounds,
+        initial_bounds: Bounds,
+        initial_poly_bounds: PolyBounds | None,
+    ) -> tuple[Bounds, PolyBounds]:
+        """
+        Returns a tuple of Bounds, PolyBounds representing the interval bounds and poly bounds of that layer.
+        """
+        current_interval_bounds, current_poly_bounds = self.deeppoly_forward(
+            previous_bounds
+        )[0]
+        if initial_poly_bounds is None:
+            return current_interval_bounds, current_poly_bounds
+        new_initial_poly_bounds = substitute_poly_bounds(
+            current_poly_bounds, initial_poly_bounds
+        )
+        tight_interval_bounds = substitute_interval_bounds(
+            new_initial_poly_bounds, initial_bounds
+        )
+        return tight_interval_bounds, new_initial_poly_bounds
 
 
 class BoundedLinear(BoundedModule):
@@ -407,6 +491,32 @@ class BoundedSequential(BoundedModule):
         # Return all collected layer bounds
         return all_layer_bounds
 
+    def poly_forward(
+        self,
+        previous_bounds: Bounds,
+        initial_bounds: Bounds,
+        initial_poly_bounds: PolyBounds | None,
+    ) -> tuple[Bounds, PolyBounds]:
+        self.model_module.eval()
+        with torch.no_grad():
+            bounded_modules = [
+                get_bounded_module(child) for child in self.model_module.children()
+            ]
+
+            # Start with the input bounds and initial symbolic representation
+            current_bounds = previous_bounds
+            current_poly_bounds = initial_poly_bounds
+
+            # Propagate through each child module
+            for bounded_module in bounded_modules:
+                current_bounds, current_poly_bounds = bounded_module.poly_forward(
+                    current_bounds,  # Tight bounds from previous layer
+                    initial_bounds,  # Original network input bounds (unchanged)
+                    current_poly_bounds,  # Accumulated symbolic bounds (in terms of network input)
+                )
+
+        return current_bounds, current_poly_bounds
+
 
 def backsubstitute_bounds(layer_bounds_list, input_bounds):
     """
@@ -425,86 +535,18 @@ def backsubstitute_bounds(layer_bounds_list, input_bounds):
         # Start from the last layer
         _, target_poly = layer_bounds_list[-1]
 
-        current_lower_coef = (
-            target_poly.lower_coef
-        )  # (batch, out_neurons, prev_neurons)
-        current_lower_bias = target_poly.lower_bias  # (batch, out_neurons)
-        current_upper_coef = target_poly.upper_coef
-        current_upper_bias = target_poly.upper_bias
+        current_poly_bounds = target_poly
 
         # Backsubstitute through each layer (from second-to-last down to first)
         for i in range(len(layer_bounds_list) - 2, -1, -1):
             _, prev_poly = layer_bounds_list[i]
+            new_poly_bounds = substitute_poly_bounds(current_poly_bounds, prev_poly)
+            current_poly_bounds = new_poly_bounds
 
-            # For lower bound: substitute previous layer's symbolic forms
-            # Positive coefficients use lower bound, negative use upper bound
-            lower_coef_pos = torch.clamp(
-                current_lower_coef, min=0
-            )  # (batch, out, prev)
-            lower_coef_neg = torch.clamp(current_lower_coef, max=0)
-
-            # Compose: new_coef = current_coef @ prev_coef
-            new_lower_coef = torch.bmm(
-                lower_coef_pos, prev_poly.lower_coef
-            ) + torch.bmm(lower_coef_neg, prev_poly.upper_coef)
-
-            # Compose bias: new_bias = current_coef @ prev_bias + current_bias
-            new_lower_bias = (
-                torch.bmm(lower_coef_pos, prev_poly.lower_bias.unsqueeze(-1)).squeeze(
-                    -1
-                )
-                + torch.bmm(lower_coef_neg, prev_poly.upper_bias.unsqueeze(-1)).squeeze(
-                    -1
-                )
-                + current_lower_bias
-            )
-
-            # For upper bound: positive coefficients use upper bound, negative use lower bound
-            upper_coef_pos = torch.clamp(current_upper_coef, min=0)
-            upper_coef_neg = torch.clamp(current_upper_coef, max=0)
-
-            new_upper_coef = torch.bmm(
-                upper_coef_pos, prev_poly.upper_coef
-            ) + torch.bmm(upper_coef_neg, prev_poly.lower_coef)
-
-            new_upper_bias = (
-                torch.bmm(upper_coef_pos, prev_poly.upper_bias.unsqueeze(-1)).squeeze(
-                    -1
-                )
-                + torch.bmm(upper_coef_neg, prev_poly.lower_bias.unsqueeze(-1)).squeeze(
-                    -1
-                )
-                + current_upper_bias
-            )
-
-            current_lower_coef = new_lower_coef
-            current_lower_bias = new_lower_bias
-            current_upper_coef = new_upper_coef
-            current_upper_bias = new_upper_bias
-
-        # Now we're in terms of input - compute concrete bounds
-        input_lower = input_bounds.lower  # (batch, input_dim)
-        input_upper = input_bounds.upper
-
-        # Compute final lower bound
-        lower_coef_pos = torch.clamp(current_lower_coef, min=0)
-        lower_coef_neg = torch.clamp(current_lower_coef, max=0)
-        final_lower = (
-            torch.bmm(lower_coef_pos, input_lower.unsqueeze(-1)).squeeze(-1)
-            + torch.bmm(lower_coef_neg, input_upper.unsqueeze(-1)).squeeze(-1)
-            + current_lower_bias
+        tight_input_bounds = substitute_interval_bounds(
+            current_poly_bounds, input_bounds
         )
-
-        # Compute final upper bound
-        upper_coef_pos = torch.clamp(current_upper_coef, min=0)
-        upper_coef_neg = torch.clamp(current_upper_coef, max=0)
-        final_upper = (
-            torch.bmm(upper_coef_pos, input_upper.unsqueeze(-1)).squeeze(-1)
-            + torch.bmm(upper_coef_neg, input_lower.unsqueeze(-1)).squeeze(-1)
-            + current_upper_bias
-        )
-
-        return Bounds(final_lower, final_upper)
+        return tight_input_bounds
 
 
 BoundedModuleRegistry = {
@@ -556,7 +598,7 @@ def get_input_bounds(x, eps):
     return Bounds(lower, upper)
 
 
-def evaluate_bound_quality(bounds, verbose=False):
+def evaluate_bound_quality(bounds: List[Bounds] | Bounds, verbose=False):
     """
     Computes the mean width of bounds for single or multiple bounds entries.
 
@@ -570,7 +612,7 @@ def evaluate_bound_quality(bounds, verbose=False):
     """
 
     # Ensure bounds_list is a list
-    if isinstance(bounds, tuple):
+    if isinstance(bounds, Bounds):
         bounds_list = [bounds]
     elif isinstance(bounds, list):
         bounds_list = bounds
